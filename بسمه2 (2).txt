@@ -1,0 +1,800 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>خريطة كنز أخلاقيات الباحث</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 20px;
+            font-family: 'Amiri', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100%;
+            color: #333;
+        }
+
+        .treasure-map {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #f4f1e8;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .treasure-map::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.1) 2px, transparent 2px),
+                radial-gradient(circle at 80% 70%, rgba(139, 69, 19, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px, 30px 30px;
+            pointer-events: none;
+        }
+
+        .map-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .map-title {
+            font-size: 2.5rem;
+            color: #8b4513;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .map-subtitle {
+            font-size: 1.2rem;
+            color: #654321;
+            font-style: italic;
+        }
+
+        .treasure-path {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .ethics-station {
+            background: linear-gradient(145deg, #fff8dc, #f5deb3);
+            border: 3px solid #daa520;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .ethics-station:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(218, 165, 32, 0.4);
+            border-color: #b8860b;
+        }
+
+        .ethics-station.discovered {
+            background: linear-gradient(145deg, #98fb98, #90ee90);
+            border-color: #32cd32;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 10px rgba(50, 205, 50, 0.5); }
+            to { box-shadow: 0 0 20px rgba(50, 205, 50, 0.8); }
+        }
+
+        .station-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .station-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #8b4513;
+            margin-bottom: 10px;
+        }
+
+        .station-description {
+            font-size: 0.9rem;
+            color: #654321;
+            line-height: 1.4;
+            opacity: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .ethics-station.discovered .station-description {
+            opacity: 1;
+            max-height: 200px;
+        }
+
+        .treasure-chest {
+            text-align: center;
+            margin-top: 40px;
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 2px dashed #daa520;
+        }
+
+        .chest-container {
+            display: inline-block;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            padding: 15px;
+        }
+
+        .chest-container:hover {
+            transform: scale(1.05);
+        }
+
+        .chest-icon {
+            font-size: 5rem;
+            color: #daa520;
+            transition: all 0.3s ease;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .chest-container.unlocked .chest-icon {
+            color: #ffd700;
+            animation: treasure-glow 1.5s ease-in-out infinite alternate;
+        }
+
+        #treasureName {
+            font-size: 1.3rem;
+            color: #8b4513;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        @keyframes treasure-glow {
+            from { text-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            to { text-shadow: 0 0 30px rgba(255, 215, 0, 0.9); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ddd;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #32cd32, #98fb98);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .completion-message {
+            background: linear-gradient(145deg, #ffd700, #ffed4e);
+            border: 3px solid #daa520;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            margin-top: 30px;
+            display: none;
+            animation: celebration 1s ease-in-out;
+        }
+
+        @keyframes celebration {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .completion-message.show {
+            display: block;
+        }
+
+        .completion-title {
+            font-size: 2rem;
+            color: #8b4513;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .completion-text {
+            font-size: 1.2rem;
+            color: #654321;
+            line-height: 1.6;
+        }
+
+        .students-info {
+            background: linear-gradient(145deg, #e6f3ff, #cce7ff);
+            border: 2px solid #4a90e2;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.2);
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-icon {
+            font-size: 2rem;
+        }
+
+        .info-header h3 {
+            font-size: 1.5rem;
+            color: #2c5aa0;
+            margin: 0;
+            font-weight: bold;
+        }
+
+        .students-names {
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .student-name {
+            font-size: 1.2rem;
+            color: #1e3a8a;
+            font-weight: bold;
+            margin: 8px 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .academic-info {
+            border-top: 1px solid rgba(74, 144, 226, 0.3);
+            padding-top: 15px;
+        }
+
+        .degree {
+            font-size: 1.1rem;
+            color: #3b82f6;
+            font-weight: 600;
+            margin: 8px 0;
+        }
+
+        .supervisor {
+            font-size: 1.1rem;
+            color: #dc2626;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+
+        .reset-button {
+            background: linear-gradient(145deg, #dc143c, #b22222);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .reset-button:hover {
+            background: linear-gradient(145deg, #b22222, #8b0000);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .treasure-map {
+                padding: 20px;
+            }
+            
+            .treasure-path {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .map-title {
+                font-size: 1.8rem;
+            }
+            
+            .map-subtitle {
+                font-size: 1rem;
+            }
+            
+            .ethics-station {
+                min-height: 160px;
+                padding: 15px;
+            }
+            
+            .station-icon {
+                font-size: 2.2rem;
+                margin-bottom: 10px;
+            }
+            
+            .station-title {
+                font-size: 1.1rem;
+                margin-bottom: 8px;
+            }
+            
+            .station-description {
+                font-size: 0.8rem;
+            }
+            
+            .students-names {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .student-name {
+                font-size: 1.1rem;
+            }
+            
+            .degree, .supervisor {
+                font-size: 1rem;
+            }
+            
+            .treasure-chest {
+                margin-top: 30px;
+                padding: 15px;
+                background: rgba(255, 255, 255, 0.2);
+                border: 3px dashed #daa520;
+            }
+            
+            .chest-container {
+                padding: 20px;
+            }
+            
+            .chest-icon {
+                font-size: 4rem !important;
+                display: block !important;
+                margin-bottom: 15px !important;
+            }
+            
+            #treasureName {
+                font-size: 1.2rem !important;
+                display: block !important;
+                color: #8b4513 !important;
+                font-weight: bold !important;
+            }
+            
+            .completion-title {
+                font-size: 1.6rem;
+            }
+            
+            .completion-text {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .treasure-map {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            .treasure-path {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .map-title {
+                font-size: 1.6rem;
+                margin-bottom: 8px;
+            }
+            
+            .map-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .ethics-station {
+                min-height: 140px;
+                padding: 12px;
+            }
+            
+            .station-icon {
+                font-size: 2rem;
+                margin-bottom: 8px;
+            }
+            
+            .station-title {
+                font-size: 1rem;
+                margin-bottom: 6px;
+            }
+            
+            .station-description {
+                font-size: 0.75rem;
+                line-height: 1.3;
+            }
+            
+            .students-info {
+                padding: 20px;
+                margin: 20px 0;
+            }
+            
+            .info-header h3 {
+                font-size: 1.3rem;
+            }
+            
+            .info-icon {
+                font-size: 1.5rem;
+            }
+            
+            .student-name {
+                font-size: 1rem;
+            }
+            
+            .degree {
+                font-size: 0.9rem;
+            }
+            
+            .supervisor {
+                font-size: 0.9rem;
+            }
+            
+            .progress-bar {
+                height: 18px;
+                margin: 15px 0;
+            }
+            
+            .progress-text {
+                font-size: 0.8rem;
+            }
+            
+            .treasure-chest {
+                margin-top: 25px !important;
+                padding: 20px !important;
+                background: rgba(255, 215, 0, 0.1) !important;
+                border: 3px solid #daa520 !important;
+                border-radius: 20px !important;
+                box-shadow: 0 5px 15px rgba(218, 165, 32, 0.3) !important;
+            }
+            
+            .chest-container {
+                padding: 15px !important;
+                display: block !important;
+            }
+            
+            .chest-icon {
+                font-size: 3.5rem !important;
+                display: block !important;
+                margin: 0 auto 10px auto !important;
+                text-align: center !important;
+            }
+            
+            #treasureName {
+                font-size: 1rem !important;
+                display: block !important;
+                text-align: center !important;
+                color: #8b4513 !important;
+                font-weight: bold !important;
+                margin: 0 !important;
+            }
+            
+            .completion-message {
+                padding: 20px;
+                margin-top: 20px;
+            }
+            
+            .completion-title {
+                font-size: 1.4rem;
+                margin-bottom: 10px;
+            }
+            
+            .completion-text {
+                font-size: 0.9rem;
+            }
+            
+            .reset-button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+                margin-top: 15px;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <main class="treasure-map">
+   <header class="map-header">
+    <h1 class="map-title" id="mapTitle">خريطة كنز أخلاقيات الباحث</h1>
+    <p class="map-subtitle">اكتشف المبادئ الثمانية للوصول إلى الكنز</p>
+   </header>
+   <div class="students-info">
+    <div class="info-header"><span class="info-icon">👩‍🎓</span>
+     <h3>إعداد الطالبتين</h3>
+    </div>
+    <div class="students-names">
+     <p class="student-name">بسمه سعيد أحمد الزهراني</p>
+     <p class="student-name">داليا علي حسن الحربي</p>
+    </div>
+    <div class="academic-info">
+     <p class="degree">ماجستير تقنيات التعليم - جامعة الباحة</p>
+     <p class="supervisor">إشراف: د. هند حامد بريك الغانمي</p>
+    </div>
+   </div>
+   <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+    <div class="progress-text" id="progressText">
+     0 / 8 مبادئ مكتشفة
+    </div>
+   </div>
+   <div class="treasure-path" id="treasurePath">
+    <div class="ethics-station" data-principle="credibility"><span class="station-icon">🎯</span>
+     <h3 class="station-title">المصداقية</h3>
+     <p class="station-description">يجب على الباحث أن يعرض نتائجه بصدق وألا يكمل معلومات ناقصة أو غير كاملة معتمداً على ما يظنه قد حصل.</p>
+    </div>
+    <div class="ethics-station" data-principle="responsibility"><span class="station-icon">⚖️</span>
+     <h3 class="station-title">المسؤولية</h3>
+     <p class="station-description">على الباحث تحمل المسؤولية الكاملة لكل بحث أو تجربة علمية يقوم بها سواء كانت رسالة علمية أو دراسة ظاهرة.</p>
+    </div>
+    <div class="ethics-station" data-principle="emotional-stability"><span class="station-icon">🧘</span>
+     <h3 class="station-title">البعد عن الانفعال</h3>
+     <p class="station-description">الثبات الانفعالي صفة يجب أن يلتزم بها الباحث في كل مراحل البحث مع وضع مسافة بينه وبين موضوع بحثه.</p>
+    </div>
+    <div class="ethics-station" data-principle="expertise"><span class="station-icon">🎓</span>
+     <h3 class="station-title">الخبرة</h3>
+     <p class="station-description">يجب على الباحث أن يجري بحوثاً مناسبة لمستوى خبرته وتدريبه، والاستعانة بالخبراء عند الحاجة.</p>
+    </div>
+    <div class="ethics-station" data-principle="safety"><span class="station-icon">🛡️</span>
+     <h3 class="station-title">السلامة</h3>
+     <p class="station-description">على الباحث ألا يعرض نفسه للمخاطر الجسدية أو الأخلاقية، وتجنب البحوث في بيئات خطرة. سلامة المشاركين مسؤوليته.</p>
+    </div>
+    <div class="ethics-station" data-principle="trust"><span class="station-icon">🤝</span>
+     <h3 class="station-title">الثقة</h3>
+     <p class="station-description">يجب أن يبني الباحث علاقة ثقة مع المشاركين للحصول على نتائج دقيقة وتعاون كبير، وألا يستغل تلك الثقة.</p>
+    </div>
+    <div class="ethics-station" data-principle="empathy"><span class="station-icon">❤️</span>
+     <h3 class="station-title">مراعاة مشاعر الآخرين</h3>
+     <p class="station-description">الباحث يتعامل مع فئات متعددة قد تكون عرضة للانهزامية مثل كبار السن والمرضى، لذلك يجب مراعاة مشاعرهم.</p>
+    </div>
+    <div class="ethics-station" data-principle="confidentiality"><span class="station-icon">🔒</span>
+     <h3 class="station-title">سرية المعلومات</h3>
+     <p class="station-description">يجب على الباحث حماية هوية المستهدفين في جميع مراحل البحث وتجنب أي تلميحات قد تكشف هويتهم الحقيقية.</p>
+    </div>
+   </div>
+   <div class="treasure-chest">
+    <div class="chest-container" id="treasureChest"><span class="chest-icon">📦</span>
+     <p id="treasureName">كنز الباحث الأخلاقي</p>
+    </div>
+   </div>
+   <div class="completion-message" id="completionMessage">
+    <h2 class="completion-title">🎉 مبروك! 🎉</h2>
+    <p class="completion-text" id="completionText">تهانينا! لقد أصبحت باحثاً أخلاقياً متميزاً</p><button class="reset-button" onclick="resetMap()">ابدأ رحلة جديدة</button>
+   </div>
+  </main>
+  <script>
+        const defaultConfig = {
+            map_title: "خريطة كنز أخلاقيات الباحث",
+            treasure_name: "كنز الباحث الأخلاقي",
+            completion_message: "تهانينا! لقد أصبحت باحثاً أخلاقياً متميزاً"
+        };
+
+        let discoveredPrinciples = new Set();
+        const totalPrinciples = 8;
+
+        function initializeMap() {
+            const stations = document.querySelectorAll('.ethics-station');
+            stations.forEach(station => {
+                station.addEventListener('click', () => discoverPrinciple(station));
+            });
+
+            document.getElementById('treasureChest').addEventListener('click', openTreasure);
+            updateProgress();
+        }
+
+        function discoverPrinciple(station) {
+            const principle = station.dataset.principle;
+            
+            if (!discoveredPrinciples.has(principle)) {
+                discoveredPrinciples.add(principle);
+                station.classList.add('discovered');
+                
+                // إضافة تأثير صوتي بصري
+                station.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    station.style.transform = '';
+                }, 300);
+                
+                updateProgress();
+                
+                if (discoveredPrinciples.size === totalPrinciples) {
+                    setTimeout(() => {
+                        document.getElementById('treasureChest').classList.add('unlocked');
+                        document.querySelector('.chest-icon').textContent = '💎';
+                    }, 500);
+                }
+            }
+        }
+
+        function updateProgress() {
+            const progress = (discoveredPrinciples.size / totalPrinciples) * 100;
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            progressFill.style.width = progress + '%';
+            progressText.textContent = `${discoveredPrinciples.size} / ${totalPrinciples} مبادئ مكتشفة`;
+        }
+
+        function openTreasure() {
+            if (discoveredPrinciples.size === totalPrinciples) {
+                document.getElementById('completionMessage').classList.add('show');
+                
+                // إضافة تأثير الاحتفال
+                createConfetti();
+            } else {
+                // رسالة تشجيعية
+                const remaining = totalPrinciples - discoveredPrinciples.size;
+                const message = `تحتاج لاكتشاف ${remaining} مبادئ أخرى للوصول إلى الكنز!`;
+                
+                // إنشاء رسالة مؤقتة
+                const tempMessage = document.createElement('div');
+                tempMessage.textContent = message;
+                tempMessage.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: #ff6b6b;
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 10px;
+                    font-size: 1.1rem;
+                    z-index: 1000;
+                    animation: fadeInOut 3s ease-in-out;
+                `;
+                
+                document.body.appendChild(tempMessage);
+                setTimeout(() => tempMessage.remove(), 3000);
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.style.cssText = `
+                        position: fixed;
+                        width: 10px;
+                        height: 10px;
+                        background: ${colors[Math.floor(Math.random() * colors.length)]};
+                        top: -10px;
+                        left: ${Math.random() * 100}%;
+                        border-radius: 50%;
+                        animation: fall 3s linear forwards;
+                        z-index: 1000;
+                    `;
+                    
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 100);
+            }
+        }
+
+        function resetMap() {
+            discoveredPrinciples.clear();
+            
+            const stations = document.querySelectorAll('.ethics-station');
+            stations.forEach(station => {
+                station.classList.remove('discovered');
+            });
+            
+            document.getElementById('treasureChest').classList.remove('unlocked');
+            document.querySelector('.chest-icon').textContent = '📦';
+            document.getElementById('completionMessage').classList.remove('show');
+            
+            updateProgress();
+        }
+
+        // إضافة CSS للرسوم المتحركة
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInOut {
+                0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+                50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            }
+            
+            @keyframes fall {
+                to {
+                    transform: translateY(100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        async function render(config) {
+            const mapTitle = config.map_title || defaultConfig.map_title;
+            const treasureName = config.treasure_name || defaultConfig.treasure_name;
+            const completionMessage = config.completion_message || defaultConfig.completion_message;
+
+            document.getElementById('mapTitle').textContent = mapTitle;
+            document.getElementById('treasureName').textContent = treasureName;
+            document.getElementById('completionText').textContent = completionMessage;
+        }
+
+        function mapToCapabilities(config) {
+            return {
+                recolorables: [],
+                borderables: [],
+                fontEditable: undefined,
+                fontSizeable: undefined
+            };
+        }
+
+        function mapToEditPanelValues(config) {
+            return new Map([
+                ["map_title", config.map_title || defaultConfig.map_title],
+                ["treasure_name", config.treasure_name || defaultConfig.treasure_name],
+                ["completion_message", config.completion_message || defaultConfig.completion_message]
+            ]);
+        }
+
+        // تهيئة التطبيق
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeMap();
+            
+            if (window.elementSdk) {
+                window.elementSdk.init({
+                    defaultConfig,
+                    render,
+                    mapToCapabilities,
+                    mapToEditPanelValues
+                });
+            }
+        });
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'991bc23b33afce18',t:'MTc2MDk5NzMxOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
